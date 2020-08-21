@@ -84,8 +84,8 @@ main (int argc, char** argv)
     PointCloudWithNormals::Ptr points_with_normals_tgt (new PointCloudWithNormals);
     pcl::NormalEstimation<PointT, PointNormalT> norm_est;
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
-    norm_est.setSearchMethod (tree);
-    norm_est.setKSearch (30);
+    norm_est.setSearchMethod (tree);  //Provide a pointer to the search object. 
+    norm_est.setKSearch (30); // Set the number of k nearest neighbors to use for the feature estimation. 
 
     norm_est.setInputCloud (cloud_in);
     norm_est.compute (*points_with_normals_src);
