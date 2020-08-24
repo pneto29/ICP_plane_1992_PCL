@@ -8,6 +8,7 @@ The dependencies are header-only and are all included in the ext directory. As a
 
 * PCL (Point cloud library) - 1.7 version
 * Linux Ubuntu 16.04 or 18.04
+* Qt Creator 4.5.2
 
 ## Usage ##
 
