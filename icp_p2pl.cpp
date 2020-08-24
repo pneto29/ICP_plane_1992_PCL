@@ -1,3 +1,14 @@
+/*********************************************************************************************************************
+Main Function for point cloud registration with ICP point2plane
+Last modified: August 24, 2020
+
+Reference:
+Chen, Yang, and Gérard Medioni. "Object modelling by registration of multiple range images." 
+Image and vision computing 10.3 (1992): 145-155.
+
+Responsible for implementation: Polycarpo Souza Neto
+Documentation:
+**********************************************************************************************************************/
 #include "validationlib.h"
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
