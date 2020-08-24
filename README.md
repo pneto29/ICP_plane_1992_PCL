@@ -25,7 +25,6 @@ make
 ## Parameters ##
 * argv[1]: target cloud
 * argv[2]: source cloud
-* argv[3]: Setting max number of registration iterations
 ## Reference ##
 
 Chen, Yang, and Gérard Medioni. "Object modelling by registration of multiple range images." 
