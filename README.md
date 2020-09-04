@@ -26,6 +26,10 @@ make
 ## Parameters ##
 * argv[1]: target cloud
 * argv[2]: source cloud
+* argv[3]: k number of neighbors
+* argv[4]: cloud final
+
+
 ## Reference ##
 
 Chen, Yang, and Gérard Medioni. "Object modelling by registration of multiple range images." 
