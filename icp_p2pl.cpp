@@ -6,7 +6,7 @@ Reference:
 Chen, Yang, and Gérard Medioni. "Object modelling by registration of multiple range images." 
 Image and vision computing 10.3 (1992): 145-155.
 
-Responsible for implementation: ***
+Responsible for implementation: authors
 Documentation:
 **********************************************************************************************************************/
 #include "validationlib.h"
@@ -18,45 +18,6 @@ typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloud;
 typedef pcl::PointNormal PointNormalT;
 typedef pcl::PointCloud<PointNormalT> PointCloudWithNormals;
-
-double computeCloudRMS(pcl::PointCloud<pcl::PointXYZ>::ConstPtr target, pcl::PointCloud<pcl::PointXYZ>::ConstPtr source, double max_range){ 
-    //double computeCloudRMS(pcl::PointCloud<pcl::PointXYZ>::ConstPtr target, pcl::PointCloud<pcl::PointXYZ>::ConstPtr source){
-    
-    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
-    tree->setInputCloud(target);
-    
-    double fitness_score = 0.0;
-    
-    std::vector<int> nn_indices (1);
-    std::vector<float> nn_dists (1);
-    
-    // For each point in the source dataset
-    int nr = 0;
-    for (size_t i = 0; i < source->points.size (); ++i){
-        //Avoid NaN points as they crash nn searches
-        if(!pcl_isfinite((*source)[i].x)){
-            continue;
-        }
-        
-        // Find its nearest neighbor in the target
-        tree->nearestKSearch (source->points[i], 1, nn_indices, nn_dists);
-        
-        // Deal with occlusions (incomplete targets)
-        if (nn_dists[0] <= max_range*max_range){
-            // Add to the fitness score
-            fitness_score += nn_dists[0];
-            nr++;
-        }
-    }
-    
-    if (nr > 0){
-        //cout << "nr: " << nr << endl;
-        //cout << "fitness_score: " << fitness_score << endl;
-        return sqrt(fitness_score / nr);
-    }else{
-        return (std::numeric_limits<double>::max ());
-    }
-}
 
 int
 main (int argc, char** argv)
@@ -95,8 +56,9 @@ main (int argc, char** argv)
     PointCloudWithNormals::Ptr points_with_normals_tgt (new PointCloudWithNormals);
     pcl::NormalEstimation<PointT, PointNormalT> norm_est;
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+    int k_neig = atoi(argv[3]);
     norm_est.setSearchMethod (tree);  //Provide a pointer to the search object. 
-    norm_est.setKSearch (30); // Set the number of k nearest neighbors to use for the feature estimation. 
+    norm_est.setKSearch (k_neig); // Set the number of k nearest neighbors to use for the feature estimation.
 
     norm_est.setInputCloud (cloud_in);
     norm_est.compute (*points_with_normals_src);
@@ -111,7 +73,6 @@ main (int argc, char** argv)
     pcl::IterativeClosestPoint<PointNormalT, PointNormalT> icp;
     icp.setInputSource (points_with_normals_src);
     icp.setInputTarget (points_with_normals_tgt);
-    //  icp.setTransformationEpsilon (1e-6);
     // Run the same optimization in a loop and visualize the results
     Eigen::Matrix4f Ti = Eigen::Matrix4f::Identity (), prev, targetToSource;
     PointCloudWithNormals::Ptr reg_result = points_with_normals_src;
@@ -139,7 +100,7 @@ main (int argc, char** argv)
     cout<<"RMSE" << rms<<":"<< endl;
     printf("Tempo:%f",(clock() - tempo) / (double)CLOCKS_PER_SEC);
 
-
+      pcl::io::savePCDFileASCII (argv[4], *reg_result);
 int sizePoints = 2; // size of points
 
 
