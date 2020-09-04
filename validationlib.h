@@ -52,34 +52,45 @@ typedef pcl::PointCloud<PointNormalT> PointCloudWithNormals;
 
 #define PI 3.14159265
 
-double computeCloudRMSE(pcl::PointCloud<pcl::PointXYZ>::ConstPtr target,
-                        pcl::PointCloud<pcl::PointXYZ>::ConstPtr source,
-                        double max_range)
-{
+double computeCloudRMS(pcl::PointCloud<pcl::PointXYZ>::ConstPtr target, pcl::PointCloud<pcl::PointXYZ>::ConstPtr source, double max_range){ 
+    //double computeCloudRMS(pcl::PointCloud<pcl::PointXYZ>::ConstPtr target, pcl::PointCloud<pcl::PointXYZ>::ConstPtr source){
+    
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
     tree->setInputCloud(target);
-    double fitness_score = 0.0;
-    std::vector<int> nn_indices(1);
-    std::vector<float> nn_dists(1);
-    int nr = 0;
     
+    double fitness_score = 0.0;
+    
+    std::vector<int> nn_indices (1);
+    std::vector<float> nn_dists (1);
+    
+    // For each point in the source dataset
+    int nr = 0;
     for (size_t i = 0; i < source->points.size (); ++i){
-        if (!pcl_isfinite((*source)[i].x))
+        //Avoid NaN points as they crash nn searches
+        if(!pcl_isfinite((*source)[i].x)){
             continue;
-		
-        tree->nearestKSearch(source->points[i], 1, nn_indices, nn_dists);
-
+        }
+        
+        // Find its nearest neighbor in the target
+        tree->nearestKSearch (source->points[i], 1, nn_indices, nn_dists);
+        
+        // Deal with occlusions (incomplete targets)
         if (nn_dists[0] <= max_range*max_range){
+            // Add to the fitness score
             fitness_score += nn_dists[0];
             nr++;
         }
     }
-
-    if (nr > 0)
+    
+    if (nr > 0){
+        //cout << "nr: " << nr << endl;
+        //cout << "fitness_score: " << fitness_score << endl;
         return sqrt(fitness_score / nr);
-    else
-        return (std::numeric_limits<double>::max());
+    }else{
+        return (std::numeric_limits<double>::max ());
+    }
 }
+
 
 Eigen::Vector3f getMedianPoint(PointCloud::Ptr cloud)
 {
