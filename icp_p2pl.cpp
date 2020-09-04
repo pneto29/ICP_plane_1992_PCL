@@ -6,7 +6,7 @@ Reference:
 Chen, Yang, and Gérard Medioni. "Object modelling by registration of multiple range images." 
 Image and vision computing 10.3 (1992): 145-155.
 
-Responsible for implementation: Polycarpo Souza Neto
+Responsible for implementation: ***
 Documentation:
 **********************************************************************************************************************/
 #include "validationlib.h"
