@@ -124,7 +124,7 @@ int sizePoints = 2; // size of points
     while(!viewer1->wasStopped())
     {
         viewer1->spinOnce();
-        boost::this_thread::sleep (boost::posix_time::microseconds(100000));
+//        boost::this_thread::sleep (boost::posix_time::microseconds(100000));
     }
     system("pause");
 }
